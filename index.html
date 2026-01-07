@@ -1,21 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Facial Expression Recognition</title>
-    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Face API (browser version) -->
+    <script defer src="https://unpkg.com/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+    <!-- Your script -->
+    <script defer src="script.js"></script>
 </head>
 <body>
 
-<h2>Facial Expression Recognition</h2>
-<p>Allow camera access</p>
+    <h2>Facial Expression Recognition</h2>
+    <p>Allow camera access</p>
 
-<video id="video" autoplay muted></video>
-
-<!-- FACE API FIRST -->
-<script defer src="https://unpkg.com/face-api.js@0.22.2/dist/face-api.min.js"></script>
-
-<!-- YOUR SCRIPT AFTER -->
-<script defer src="script.js"></script>
+    <video id="video" autoplay muted playsinline></video>
 
 </body>
 </html>

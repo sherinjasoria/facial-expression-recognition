@@ -1,12 +1,15 @@
 const video = document.getElementById("video")
 
+// IMPORTANT: GitHub Pages safe path
+const MODEL_URL = "models"
+
 // Load models
 Promise.all([
-    faceapi.nets.tinyFaceDetector.loadFromUri("./models"),
-    faceapi.nets.faceExpressionNet.loadFromUri("./models")
+    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+    faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
 ]).then(startVideo)
 
-// Start camera
+// Start webcam
 function startVideo() {
     navigator.mediaDevices.getUserMedia({ video: true })
         .then(stream => {
@@ -17,13 +20,12 @@ function startVideo() {
         })
 }
 
-// When video starts playing
+// When video plays
 video.addEventListener("play", () => {
 
-    // Create canvas
     const canvas = faceapi.createCanvasFromMedia(video)
 
-    // Wrap video + canvas in one container
+    // Wrap video + canvas
     const container = document.createElement("div")
     container.style.position = "relative"
     container.style.display = "inline-block"
@@ -32,10 +34,10 @@ video.addEventListener("play", () => {
     container.appendChild(video)
     container.appendChild(canvas)
 
-    // IMPORTANT: use actual video resolution
+    // Match displayed size
     const displaySize = {
-        width: video.videoWidth,
-        height: video.videoHeight
+        width: video.getBoundingClientRect().width,
+        height: video.getBoundingClientRect().height
     }
 
     canvas.width = displaySize.width
@@ -47,13 +49,13 @@ video.addEventListener("play", () => {
 
     faceapi.matchDimensions(canvas, displaySize)
 
-    // Detection loop
     setInterval(async () => {
         const detections = await faceapi
             .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
             .withFaceExpressions()
 
-        const resizedDetections = faceapi.resizeResults(detections, displaySize)
+        const resizedDetections =
+            faceapi.resizeResults(detections, displaySize)
 
         const ctx = canvas.getContext("2d")
         ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -69,8 +71,11 @@ video.addEventListener("play", () => {
                 expressions[a] > expressions[b] ? a : b
             )
 
-            const confidence = Math.round(expressions[maxExpression] * 100)
-            const label = `${maxExpression.toUpperCase()} (${confidence}%)`
+            const confidence =
+                Math.round(expressions[maxExpression] * 100)
+
+            const label =
+                `${maxExpression.toUpperCase()} (${confidence}%)`
 
             const drawBox = new faceapi.draw.DrawBox(
                 detection.detection.box,
