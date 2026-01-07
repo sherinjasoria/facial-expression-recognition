@@ -1,15 +1,32 @@
 const video = document.getElementById("video");
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
+
 const moodDisplay = document.getElementById("moodDisplay");
 const emotionMessage = document.getElementById("emotionMessage");
 const historyText = document.getElementById("history");
 const dominantMoodText = document.getElementById("dominantMood");
+const summaryText = document.getElementById("summary");
 
 const MODEL_URL = "models";
 
 let stream, canvas, interval;
 let emotionHistory = [];
+let emotionCounts = {
+  happy: 0, sad: 0, angry: 0,
+  surprised: 0, fearful: 0,
+  disgusted: 0, neutral: 0
+};
+
+const moodMessages = {
+  happy: "You look cheerful 😊",
+  sad: "Take care 💙",
+  angry: "Deep breath 😌",
+  surprised: "That’s exciting 😲",
+  fearful: "You’re safe 🤍",
+  disgusted: "Let’s reset 🌿",
+  neutral: "Calm state 🙂"
+};
 
 const moodColors = {
   happy: "#fff7cc",
@@ -19,16 +36,6 @@ const moodColors = {
   fearful: "#e5e7eb",
   disgusted: "#dcfce7",
   neutral: "#ffffff"
-};
-
-const moodMessages = {
-  happy: "You look cheerful today 😊",
-  sad: "It’s okay to take a break 💙",
-  angry: "Take a deep breath 😌",
-  surprised: "That looks exciting 😲",
-  fearful: "You’re safe here 🤍",
-  disgusted: "Let’s refresh your mood 🌿",
-  neutral: "You look calm and composed 🙂"
 };
 
 Promise.all([
@@ -46,8 +53,20 @@ startBtn.onclick = () => {
 stopBtn.onclick = () => {
   if (stream) stream.getTracks().forEach(t => t.stop());
   clearInterval(interval);
-  moodDisplay.innerText = "Mood: Camera stopped";
 };
+
+const chartCtx = document.getElementById("emotionChart").getContext("2d");
+const emotionChart = new Chart(chartCtx, {
+  type: "bar",
+  data: {
+    labels: Object.keys(emotionCounts),
+    datasets: [{
+      label: "Emotion Frequency",
+      data: Object.values(emotionCounts),
+      backgroundColor: "#4f46e5"
+    }]
+  }
+});
 
 video.addEventListener("play", () => {
   if (canvas) canvas.remove();
@@ -75,27 +94,29 @@ video.addEventListener("play", () => {
     faceapi.draw.drawDetections(canvas, resized);
 
     if (resized.length > 0) {
-      const expressions = resized[0].expressions;
-      const mood = Object.keys(expressions).reduce((a, b) =>
-        expressions[a] > expressions[b] ? a : b
-      );
+      const exp = resized[0].expressions;
+      const mood = Object.keys(exp).reduce((a,b)=>exp[a]>exp[b]?a:b);
 
       emotionHistory.push(mood);
-      if (emotionHistory.length > 10) emotionHistory.shift();
+      if (emotionHistory.length > 15) emotionHistory.shift();
+
+      emotionCounts[mood]++;
+      emotionChart.data.datasets[0].data = Object.values(emotionCounts);
+      emotionChart.update();
 
       historyText.innerText = emotionHistory.join(" → ");
-
-      const freq = {};
-      emotionHistory.forEach(e => freq[e] = (freq[e] || 0) + 1);
-      const dominant = Object.keys(freq).reduce((a, b) =>
-        freq[a] > freq[b] ? a : b
-      );
-
-      dominantMoodText.innerText = dominant.toUpperCase();
-
       moodDisplay.innerText = `Mood: ${mood.toUpperCase()}`;
       emotionMessage.innerText = moodMessages[mood];
       document.body.style.background = moodColors[mood];
+
+      const freq = {};
+      emotionHistory.forEach(e=>freq[e]=(freq[e]||0)+1);
+      const dominant = Object.keys(freq).reduce((a,b)=>freq[a]>freq[b]?a:b);
+      dominantMoodText.innerText = dominant.toUpperCase();
+
+      summaryText.innerText =
+        `Session Emotions Recorded: ${emotionHistory.length},
+         Dominant Mood: ${dominant.toUpperCase()}`;
     }
   }, 400);
 });

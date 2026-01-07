@@ -2,18 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Facial Expression Recognition</title>
+  <title>Emotion Analytics Dashboard</title>
 
   <link rel="stylesheet" href="style.css" />
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script defer src="https://unpkg.com/face-api.js@0.22.2/dist/face-api.min.js"></script>
   <script defer src="script.js"></script>
 </head>
 
 <body>
   <div class="app-container">
-    <h1>Facial Expression Recognition</h1>
-    <p class="subtitle">AI-based real-time emotion analysis</p>
+    <h1>Emotion Analytics Dashboard</h1>
+    <p class="subtitle">Real-time facial emotion analysis & insights</p>
 
     <div class="controls">
       <button id="startBtn">Start Camera</button>
@@ -29,10 +30,16 @@
 
     <div class="analytics">
       <h3>Emotion History</h3>
-      <p id="history">Waiting for data...</p>
+      <p id="history">Waiting...</p>
 
       <h3>Dominant Mood</h3>
       <p id="dominantMood">Analyzing...</p>
+
+      <h3>Emotion Distribution</h3>
+      <canvas id="emotionChart"></canvas>
+
+      <h3>Session Summary</h3>
+      <p id="summary"></p>
     </div>
   </div>
 </body>
