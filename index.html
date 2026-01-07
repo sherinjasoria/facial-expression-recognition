@@ -1,24 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Facial Expression Recognition</title>
+  <meta charset="UTF-8" />
+  <title>Facial Expression Recognition</title>
 
-    <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css" />
 
-    <!-- Face API (browser version) -->
-    <script defer src="https://unpkg.com/face-api.js@0.22.2/dist/face-api.min.js"></script>
-
-    <!-- Your script -->
-    <script defer src="script.js"></script>
+  <script defer src="https://unpkg.com/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  <script defer src="script.js"></script>
 </head>
+
 <body>
+  <div class="app-container">
+    <h1>Facial Expression Recognition</h1>
+    <p class="subtitle">AI-based real-time emotion analysis</p>
 
-    <h2>Facial Expression Recognition</h2>
-    <p>Allow camera access</p>
+    <div class="controls">
+      <button id="startBtn">Start Camera</button>
+      <button id="stopBtn">Stop Camera</button>
+    </div>
 
-    <video id="video" autoplay muted playsinline></video>
+    <h3 id="moodDisplay">Mood: Detecting...</h3>
+    <p id="emotionMessage"></p>
 
+    <div class="video-wrapper">
+      <video id="video" autoplay muted playsinline></video>
+    </div>
+
+    <div class="analytics">
+      <h3>Emotion History</h3>
+      <p id="history">Waiting for data...</p>
+
+      <h3>Dominant Mood</h3>
+      <p id="dominantMood">Analyzing...</p>
+    </div>
+  </div>
 </body>
 </html>
